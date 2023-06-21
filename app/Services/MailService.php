@@ -2,7 +2,13 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
+
+
 use PHPMailer\PHPMailer\PHPMailer;
+
 
 class MailService
 {
@@ -11,7 +17,7 @@ class MailService
 
         if (env('SMTP_DISABLE')) return true;
 
-        try {
+
             $driver = env('MAIL_DRIVER');
 
             $mailer = new PHPMailer(env('SEND_MAIL_DEBUG'));
@@ -19,8 +25,9 @@ class MailService
             if ($driver == "SMTP") {
                 $mailer->isSMTP();
                 $mailer->SMTPAuth = true;
-                $mailer->SMTPDebug = 1;
+                $mailer->SMTPDebug = 0;
 
+                $mailer->Timeout       =   5;
                 $mailer->Host = env('SMTP_HOST');
                 $mailer->Port = env('SMTP_PORT');
                 $mailer->Username = env('SMTP_USER');
@@ -42,13 +49,13 @@ class MailService
             $mailer->CharSet = 'utf-8';
             $mailer->Body = $message;
             $mailer->IsHTML(true);
-            $mailer->send();
-
-        } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-            return false;
-        }
-
+            if (!$mailer->send()) {
+                $errors = new MessageBag;
+                session()->flash('errors', $errors->add('email', 'Mailer error:'.$mailer->ErrorInfo));
+                return false;
+            } else {
+                return true;
+            }
     }
 
 }

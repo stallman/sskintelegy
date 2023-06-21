@@ -95,12 +95,11 @@ class AuthController extends Controller
             $from = env('RESET_EMAIL_FROM');
             $message = "Hello. You have registered on ".env('APP_HOST');
 
-            if ((new \App\Services\MailService())->send($request->email, "Regisration on ".env('APP_HOST'), $message, $from)) {
+            ((new \App\Services\MailService())->send($request->email, "Regisration on ".env('APP_HOST'), $message, $from));
 
-                $user = new User($request->all());
-                $user->save();
-                Auth::login($user,true);
-            }
+            $user = new User($request->all());
+            $user->save();
+            Auth::login($user,true);
 
             return response()->json(['location' => route('main')]);
         }
