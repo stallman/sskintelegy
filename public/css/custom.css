@@ -1,0 +1,16 @@
+.login {
+  height: 48px;
+  color: white;
+  width: 80px;
+  background-color: #354A71;
+  transform: skewX(-15deg);
+  border-radius: 10px;
+}
+
+.login-alert {
+    color: white;
+}
+
+.container {
+    position:relative;
+}
